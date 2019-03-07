@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 import math
+from scipy import stats
 
 
 class featureClass:
@@ -67,10 +68,11 @@ class Bayes:
         self.negativeCPT = np.array(negativeList)
 
     def printNBProbabilityOnTestDataSet(self, testDataSet):
-        features = self.features[:, 0]
-        for f in features:
-            print("{0} class".format(f))
-        print()
+        # features = self.features[:, 0]
+        # for f in features:
+        #     print("{0} class".format(f))
+        # print()
+        count = 0
         for rowIndex,testRow in enumerate(testDataSet[:,0:-1]):
             posProbability = self.posAttrProbability
             negProbability = self.negAttrProbability
@@ -81,16 +83,18 @@ class Bayes:
             totalProbabilityOnNegDataSet = (negProbability / (posProbability + negProbability))
             if (totalProbabilityOnPosDataSet > totalProbabilityOnNegDataSet):
                 self.confidence.append(totalProbabilityOnPosDataSet)
-                print("{0} {1} {2:.12f}".format(self.classifiers[0], testDataSet[rowIndex, -1], totalProbabilityOnPosDataSet))
+                #print("{0} {1} {2:.12f}".format(self.classifiers[0], testDataSet[rowIndex, -1], totalProbabilityOnPosDataSet))
                 if (self.classifiers[0] == testDataSet[rowIndex, -1]):
                     self.num_of_correct_predictions += 1
+                    count += 1
             else:
                 self.confidence.append(totalProbabilityOnNegDataSet)
-                print("{0} {1} {2:.12f}".format(self.classifiers[1], testDataSet[rowIndex, -1], totalProbabilityOnNegDataSet))
+                #print("{0} {1} {2:.12f}".format(self.classifiers[1], testDataSet[rowIndex, -1], totalProbabilityOnNegDataSet))
                 if (self.classifiers[1] == testDataSet[rowIndex, -1]):
                     self.num_of_correct_predictions += 1
-        print()
-        print(self.num_of_correct_predictions)
+
+        #print()
+        #print(self.num_of_correct_predictions)
 
     def computeWeights(self):
         features = np.array(self.features[:,-1])
@@ -194,52 +198,16 @@ class Bayes:
             totalProbabilityOnNegDataSet = (negProbability / (posProbability + negProbability))
             if (totalProbabilityOnPosDataSet > totalProbabilityOnNegDataSet):
                 self.confidence.append(totalProbabilityOnPosDataSet)
-                print("{0} {1} {2:.12f}".format(self.classifiers[0], dataSet[rowIndex, -1], totalProbabilityOnPosDataSet))
+                #print("{0} {1} {2:.12f}".format(self.classifiers[0], dataSet[rowIndex, -1], totalProbabilityOnPosDataSet))
                 if (self.classifiers[0] == dataSet[rowIndex, -1]):
                     self.num_of_correct_predictions += 1
             else:
                 self.confidence.append(totalProbabilityOnPosDataSet)
-                print("{0} {1} {2:.12f}".format(self.classifiers[1], dataSet[rowIndex, -1], totalProbabilityOnNegDataSet))
+                #print("{0} {1} {2:.12f}".format(self.classifiers[1], dataSet[rowIndex, -1], totalProbabilityOnNegDataSet))
                 if (self.classifiers[1] == dataSet[rowIndex, -1]):
                     self.num_of_correct_predictions += 1
-        print()
-        print(self.num_of_correct_predictions)
-
-    def precision_recall_graph(self, dataSet):
-        labelMap = {}
-        labelMap[self.classifiers[0]] = 1
-        labelMap[self.classifiers[1]] = 0
-
-        testLabels = dataSet[:, -1].copy()
-        for index, label in enumerate(testLabels):
-            testLabels[index,] = labelMap.get(label)
-        testLabels = testLabels.astype(int)
-
-        rocMatrix = np.column_stack((testLabels, self.confidence))
-        rocMatrixSorted = rocMatrix[np.argsort([-rocMatrix[:, 1]])][0]
-        posNegCount = Counter(rocMatrixSorted[:, 0].astype(int))
-        posCount = posNegCount.get(1)
-        negCount = posNegCount.get(0)
-
-        TP = 0
-        FP = 0
-        last_TP = 0
-        for i in range(dataSet.shape[0]):
-            if (i > 1) and (rocMatrixSorted[i, 1] != rocMatrixSorted[i - 1, 1]) and (testLabels[i] == 0) and (
-                    TP > last_TP):
-                FPR = FP / negCount
-                TPR = TP / posCount
-                print(FPR, end=",")
-                print(TPR)
-                last_TP = TP
-            if testLabels[i] == 1:
-                TP += 1
-            else:
-                FP += 1
-        FPR = FP / negCount
-        TPR = TP / posCount
-        print(FPR, end=",")
-        print(TPR)
+        #print()
+        #print(self.num_of_correct_predictions)
 
     def created_tan_feature_class(self, dependency_graph):
         for index, feature in enumerate(self.features):
@@ -259,49 +227,74 @@ class Bayes:
         return (specificAttrCount + 1.0) / (totalAttrCount + noOfAttr)
 
 if __name__ == '__main__':
-    # trainingFileName = "./Resources/lymphography_train.json"
-    # testFileName = "./Resources/lymphography_test.json"
-    choice = "n"
-    # trainingFileName = "./Resources/tic-tac-toe_train.json"
-    # testFileName = "./Resources/tic-tac-toe_test.json"
-    trainingFileName = "./Resources/tic-tac-toe_sub_train.json"
-    testFileName = "./Resources/tic-tac-toe_sub_test.json"
+    trainingFileName = "./Resources/tic-tac-toe.json"
 
-    trainBayesNetwork = Bayes(trainingFileName)
-    testBayesNetwork = Bayes(testFileName)
+    fileContent = json.load(open(trainingFileName))
+    dataset = np.array(fileContent['data'])
+    np.random.shuffle(dataset)
 
-    trainBayesNetwork.computeNBConditionalProbabilityTable()
-    if choice == "n":
+    N_folds = 10
+    limits = np.linspace(0, dataset.shape[0] + 1, N_folds + 1, dtype=int)
+    accuracy_diff_list_nb_tan = []
+
+    for i in range(len(limits) - 1):
+        trainBayesNetwork = Bayes(trainingFileName)
+        testBayesNetwork = Bayes(trainingFileName)
+        # Split the data at the correct indices
+        testBayesNetwork.dataSet = dataset[limits[i]: limits[i + 1]]
+        testBayesNetwork.shape = testBayesNetwork.dataSet.shape
+        print(limits[i])
+        if (i==0):
+            trainBayesNetwork.dataSet = dataset[limits[i+1]: ]
+            trainBayesNetwork.shape = trainBayesNetwork.dataSet.shape
+            print()
+        elif (i==N_folds-1):
+            trainBayesNetwork.dataSet = dataset[0:limits[i - 1]]
+            trainBayesNetwork.shape = trainBayesNetwork.dataSet.shape
+            print()
+        else:
+            trainBayesNetwork.dataSet = np.array(dataset[0:limits[i] - 1].tolist() + dataset[limits[i+1]: ].tolist())
+            trainBayesNetwork.shape = trainBayesNetwork.dataSet.shape
+            print()
+
+        trainBayesNetwork.computeNBConditionalProbabilityTable()
         trainBayesNetwork.printNBProbabilityOnTestDataSet(testBayesNetwork.dataSet)
-        #trainBayesNetwork.precision_recall_graph(testBayesNetwork.dataSet)
-    else:
+        nb_corrects = trainBayesNetwork.num_of_correct_predictions
+        #print(trainBayesNetwork.num_of_correct_predictions/trainBayesNetwork.dataSet.shape[0])
+
         adj_matrix = trainBayesNetwork.computeWeights()
-        #print(adj_matrix)
         vertices_list = []
         for i in range(len(trainBayesNetwork.features)):
             vertices_list.append(i)
         edge_matrix = trainBayesNetwork.findMaximumWeightedEdgeUsingPrims(adj_matrix, vertices_list)
-        #print(edge_matrix)
 
         # Output Starting part of TAN
         dependency_graph = {}
         featureDataSet = trainBayesNetwork.features.tolist()
         features = np.array(trainBayesNetwork.features)[:,0].tolist()
-        print(featureDataSet[0][0] + " " + "class")
+        #print(featureDataSet[0][0] + " " + "class")
         dependency_graph[0] = len(featureDataSet)
         for attr in features:
             for edge in edge_matrix:
                 if (features.index(attr) == edge[1]):
-                    print(str(featureDataSet[edge[1]][0]) + " " + str(featureDataSet[edge[0]][0]) + " class")
+                    #print(str(featureDataSet[edge[1]][0]) + " " + str(featureDataSet[edge[0]][0]) + " class")
                     dependency_graph[features.index(features[edge[1]])] = features.index(features[edge[0]])
-        print()
+        #print()
         trainBayesNetwork.created_tan_feature_class(dependency_graph)
         trainBayesNetwork.compute_tan_cpt(dependency_graph)
         trainBayesNetwork.tan_predict(testBayesNetwork.dataSet)
+        tan_corrects = trainBayesNetwork.num_of_correct_predictions
+        #print(trainBayesNetwork.num_of_correct_predictions/trainBayesNetwork.dataSet.shape[0])
+        nb_accuracy = nb_corrects/trainBayesNetwork.dataSet.shape[0]
+        tan_accuracy =  tan_corrects/trainBayesNetwork.dataSet.shape[0]
+        print(trainBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/trainBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/trainBayesNetwork.dataSet.shape[0])
+        accuracy_diff_list_nb_tan.append(tan_accuracy-nb_accuracy)
 
-
-        #trainBayesNetwork.precision_recall_graph(testBayesNetwork.dataSet)
-
-
+    mean = np.mean(np.array(accuracy_diff_list_nb_tan))
+    sd = np.std(np.array(accuracy_diff_list_nb_tan))
+    se = sd/math.sqrt(len(accuracy_diff_list_nb_tan))
+    t_value = mean/se
+    p_value = stats.t.sf(np.abs(t_value), len(accuracy_diff_list_nb_tan) - 1) * 2
+    print(mean, sd, se, t_value, p_value)
 
 
