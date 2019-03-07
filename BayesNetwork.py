@@ -4,6 +4,15 @@ import pandas as pd
 import itertools
 import math
 
+
+class featureClass:
+    def __init__(self, name, values, index):
+        self.name = name
+        self.values = values
+        self.index = index
+        self.parent_index = 0
+
+
 class Bayes:
     def __init__(self, fileName):
         self.classifiers = []
@@ -30,8 +39,6 @@ class Bayes:
         self.negativeDataSet = self.dataSet[np.where(self.dataSet[:,-1] == self.classifiers[1])]
         self.posAttrProbability = self.findLaplaceEstimation(self.positiveDataSet.shape[0], self.dataSet.shape[0], len(self.classifiers))
         self.negAttrProbability = self.findLaplaceEstimation(self.negativeDataSet.shape[0], self.dataSet.shape[0], len(self.classifiers))
-        #self.posAttrProbability = 1.0 * self.positiveDataSet.shape[0]/self.dataSet.shape[0]
-        #self.negAttrProbability = 1.0 * self.negativeDataSet.shape[0]/self.dataSet.shape[0]
 
     def computeNBConditionalProbabilityTable(self):
         self.classifyAndComputeDataValues()
@@ -41,15 +48,24 @@ class Bayes:
         negativeAttrCount = self.negativeDataSet.shape[0]
         for index in range(self.shape[1]-1):
             noOfClassifiers = len(self.features[index][1])
+            featureValues = self.features[index][1]
             #print("{} {}".format(self.features[index],noOfClassifiers))
             positiveAttrDict = pd.value_counts(self.positiveDataSet[:, index]).to_dict()
+            positiveAttrDict = self.check_for_missing_feature_values(featureValues, positiveAttrDict)
             positiveAttrDict.update((classifier, self.findLaplaceEstimation(count, positiveAttrCount, noOfClassifiers)) for classifier,count in positiveAttrDict.items())
             positiveList.append(positiveAttrDict)
             negativeAttrDict = pd.value_counts(self.negativeDataSet[:, index]).to_dict()
+            negativeAttrDict = self.check_for_missing_feature_values(featureValues, negativeAttrDict)
             negativeAttrDict.update((classifier, self.findLaplaceEstimation(count, negativeAttrCount, noOfClassifiers)) for classifier,count in negativeAttrDict.items())
             negativeList.append(negativeAttrDict)
         self.positiveCPT =  np.array(positiveList)
         self.negativeCPT = np.array(negativeList)
+
+    def check_for_missing_feature_values(self, featureValues, attrDict):
+        for fValue in featureValues:
+            if fValue not in attrDict.keys():
+                attrDict[fValue] = 0
+        return attrDict
 
     def findLaplaceEstimation(self, specificAttrCount, totalAttrCount, noOfAttr):
         return (specificAttrCount + 1.0)/(totalAttrCount + noOfAttr)
@@ -63,21 +79,21 @@ class Bayes:
     def printNBProbabilityOnTestDataSet(self, testDataSet):
         self.printBayesNwFeatures()
         corrects = 0
-        for i,content in enumerate(testDataSet[:,0:-1]):
+        for rowIndex,testRow in enumerate(testDataSet[:,0:-1]):
             posProbability = self.posAttrProbability
             negProbability = self.negAttrProbability
-            for index,feature in enumerate(content):
-                posProbability *= self.positiveCPT[index][feature] if feature in self.positiveCPT[index] else (1/ (self.positiveDataSet.shape[0]+len(self.features[index][1])+1))
-                negProbability *= self.negativeCPT[index][feature] if feature in self.negativeCPT[index] else (1/ (self.negativeDataSet.shape[0]+len(self.features[index][1])+1))
+            for colIndex,feature in enumerate(testRow):
+                posProbability *= self.positiveCPT[colIndex][feature] if feature in self.positiveCPT[colIndex] else (1/ (self.positiveDataSet.shape[0]+len(self.features[colIndex][1])+1))
+                negProbability *= self.negativeCPT[colIndex][feature] if feature in self.negativeCPT[colIndex] else (1/ (self.negativeDataSet.shape[0]+len(self.features[colIndex][1])+1))
             totalProbabilityOnPosDataSet = (posProbability/(posProbability+negProbability))
             totalProbabilityOnNegDataSet = (negProbability / (posProbability + negProbability))
             if (totalProbabilityOnPosDataSet > totalProbabilityOnNegDataSet):
-                print("{0} {1} {2:.12f}".format(self.classifiers[0], testDataSet[i, -1], totalProbabilityOnPosDataSet))
-                if (self.classifiers[0] == testDataSet[i, -1]):
+                print("{0} {1} {2:.12f}".format(self.classifiers[0], testDataSet[rowIndex, -1], totalProbabilityOnPosDataSet))
+                if (self.classifiers[0] == testDataSet[rowIndex, -1]):
                     corrects += 1
             else:
-                print("{0} {1} {2:.12f}".format(self.classifiers[1], testDataSet[i, -1], totalProbabilityOnNegDataSet))
-                if (self.classifiers[1] == testDataSet[i, -1]):
+                print("{0} {1} {2:.12f}".format(self.classifiers[1], testDataSet[rowIndex, -1], totalProbabilityOnNegDataSet))
+                if (self.classifiers[1] == testDataSet[rowIndex, -1]):
                     corrects += 1
         print()
         print(corrects)
@@ -85,7 +101,7 @@ class Bayes:
 
     def computeWeights(self):
         features = np.array(self.features[:,-1])
-        print(features)
+        print(self.features)
         print()
         #print(np.array(np.meshgrid(features[0][0], features[:])).T.reshape(-1,2))
         # print(np.array(np.meshgrid(features, features)).T.reshape(-1, 2)[0])
@@ -109,14 +125,10 @@ class Bayes:
                     xj_index = 0
                     adj_matrix.append(weights)
                     weights = []
-                    # print(xi_index, xj_index)
-                    # print()
-                # print(content, xi_index, xj_index)
                 sum = 0.0
                 for pair in (np.array(np.meshgrid(content[0], content[1])).T.reshape(-1,2)):
-                    matchingRecords = self.dataSet[np.where((self.dataSet[:, xi_index] == pair[0]) * (self.dataSet[:, xj_index] == pair[1]))]
-                    n_xi_xj_y = np.count_nonzero(matchingRecords[:,-1] == self.classifiers[0])
-                    n_xi_xj_y_dash = np.count_nonzero(matchingRecords[:,-1] == self.classifiers[1])
+                    n_xi_xj_y = self.dataSet[np.where((self.dataSet[:, xi_index] == pair[0]) & (self.dataSet[:, xj_index] == pair[1]) & (self.dataSet[:, -1] == self.classifiers[0]))].shape[0]
+                    n_xi_xj_y_dash = self.dataSet[np.where((self.dataSet[:, xi_index] == pair[0]) & (self.dataSet[:, xj_index] == pair[1]) & (self.dataSet[:, -1] == self.classifiers[1]))].shape[0]
 
                     p_xi_xj_y = self.findLaplaceEstimation(n_xi_xj_y, self.shape[0], len(content) * 2)
                     p_xi_xj_y_dash = self.findLaplaceEstimation(n_xi_xj_y_dash, self.shape[0], len(content) * 2)
@@ -124,10 +136,8 @@ class Bayes:
                     p_xi_xj_condition_y = self.findLaplaceEstimation(n_xi_xj_y, self.positiveDataSet.shape[0], len(content))
                     p_xi_xj_condition_y_dash = self.findLaplaceEstimation(n_xi_xj_y_dash, self.negativeDataSet.shape[0], len(content))
 
-                    p_xiy_xjy = 1.0 * self.getValueByKey(self.positiveCPT[xi_index],pair[0]) * self.getValueByKey(self.positiveCPT[xj_index],pair[1])
-                    p_xiy_dash_xjy_dash = 1.0 * self.getValueByKey(self.negativeCPT[xi_index], pair[0]) * self.getValueByKey(self.negativeCPT[xj_index], pair[1])
-                    # p_xiy_xjy = 1.0 * self.positiveCPT[counter][pair[0]] * self.positiveCPT[count][pair[1]]
-                    # p_xiy_dash_xjy_dash = 1.0 * self.negativeCPT[counter][pair[0]] * self.negativeCPT[count][pair[1]]
+                    p_xiy_xjy = 1.0 * self.positiveCPT[xi_index][pair[0]] * self.positiveCPT[xj_index][pair[1]]
+                    p_xiy_dash_xjy_dash = 1.0 * self.negativeCPT[xi_index][pair[0]] * self.negativeCPT[xj_index][pair[1]]
 
                     sum += p_xi_xj_y * math.log((p_xi_xj_condition_y/p_xiy_xjy), 2) + p_xi_xj_y_dash * math.log((p_xi_xj_condition_y_dash/p_xiy_dash_xjy_dash), 2)
                 weights.append(sum)
@@ -183,7 +193,7 @@ class Bayes:
 if __name__ == '__main__':
     trainingFileName = "./Resources/lymphography_train.json"
     testFileName = "./Resources/lymphography_test.json"
-    choice = "t"
+    choice = "n"
     # trainingFileName = "./Resources/tic-tac-toe_train.json"
     # testFileName = "./Resources/tic-tac-toe_test.json"
     # trainingFileName = "./Resources/tic-tac-toe_sub_train.json"
@@ -193,7 +203,7 @@ if __name__ == '__main__':
     testBayesNetwork = Bayes(testFileName)
 
     trainBayesNetwork.computeNBConditionalProbabilityTable()
-    if choice == "n":
+    if choice == "t":
         trainBayesNetwork.printNBProbabilityOnTestDataSet(testBayesNetwork.dataSet)
     else:
         adj_matrix = trainBayesNetwork.computeWeights()
@@ -208,16 +218,16 @@ if __name__ == '__main__':
 
         # Output for Starting part of TAN
         tree_list =[]
-        features = trainBayesNetwork.features.tolist()
-        print(features[0][0] + " " + "class")
-        tree_list.append([0, len(features)])
+        featureDataSet = trainBayesNetwork.features.tolist()
+        features = np.array(trainBayesNetwork.features)[:,0].tolist()
+        print(featureDataSet[0][0] + " " + "class")
+        tree_list.append([0, len(featureDataSet)])
         for attr in features:
             for edge in edge_matrix:
                 if (features.index(attr) == edge[1]):
-                    print(str(features[edge[1]][0]) + " " + str(features[edge[0]][0]) + " class")
+                    print(str(featureDataSet[edge[1]][0]) + " " + str(featureDataSet[edge[0]][0]) + " class")
                     #print(features.index(features[edge[1]][0]), features.index(features[edge[0]][0]))
-                    #tree_list.append([features.index(features[edge[1]][0]), features.index(features[edge[0]][0])])  # tree_list is a collection of rows in the format [child, parent]
-
+                    tree_list.append([features.index(features[edge[1]]), features.index(features[edge[0]])])  # tree_list is a collection of rows in the format [child, parent]
 
 
         # for edge in tree_list:
