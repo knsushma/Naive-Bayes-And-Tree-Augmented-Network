@@ -2,9 +2,9 @@
 
 This assignment includes:
 
- Implementation of Naive Bayes and TAN.
- Evaluating methods through Precision/Recall curves, and understand their differences with ROC curves;
- Comparing models using a paired t test to see whether one model is significantly better than the other.
+ Implementation of Naive Bayes and TAN.\
+ Evaluating methods through Precision/Recall curves, and understand their differences with ROC curves.\
+ Comparing models using a paired t test to see whether one model is significantly better than the other.\
 
 Naive Bayes 
 ```
