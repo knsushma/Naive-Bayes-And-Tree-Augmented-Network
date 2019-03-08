@@ -1,0 +1,65 @@
+lymphatics class
+block_of_affere class
+bl_of_lymph_c class
+bl_of_lymph_s class
+by_pass class
+extravasates class
+regeneration_of class
+early_uptake_in class
+lym_nodes_dimin class
+lym_nodes_enlar class
+changes_in_lym class
+defect_in_node class
+changes_in_node class
+changes_in_stru class
+special_forms class
+dislocation_of class
+exclusion_of_no class
+no_of_nodes_in class
+
+malign_lymph malign_lymph 0.901262179237
+metastases metastases 0.999839042803
+malign_lymph malign_lymph 0.987837519083
+metastases malign_lymph 0.942869613662
+malign_lymph malign_lymph 0.892856693022
+malign_lymph malign_lymph 0.809535175679
+malign_lymph malign_lymph 0.983903691064
+metastases malign_lymph 0.977300810060
+metastases metastases 0.998588980511
+metastases metastases 0.999843023170
+malign_lymph malign_lymph 0.995742812595
+metastases malign_lymph 0.924281198575
+malign_lymph malign_lymph 0.964265294579
+metastases malign_lymph 0.993348265191
+metastases metastases 0.883759928073
+metastases metastases 0.992854942529
+metastases metastases 0.999577344252
+metastases malign_lymph 0.930256795458
+metastases metastases 0.999358737690
+metastases metastases 0.997690174000
+metastases metastases 0.994128535160
+metastases metastases 0.994923181093
+metastases metastases 0.581379793306
+metastases metastases 0.919197254147
+metastases metastases 0.942393056189
+malign_lymph malign_lymph 0.968972955376
+metastases metastases 0.996927356366
+metastases metastases 0.527476115984
+malign_lymph malign_lymph 0.587219371658
+malign_lymph malign_lymph 0.971962224469
+malign_lymph metastases 0.759846586354
+malign_lymph malign_lymph 0.963859631000
+metastases metastases 0.660242212129
+metastases metastases 0.996395404850
+metastases malign_lymph 0.529453528252
+malign_lymph malign_lymph 0.905621211383
+metastases metastases 0.986669713484
+metastases metastases 0.996332992535
+metastases metastases 0.936767293324
+metastases metastases 0.962898657051
+metastases malign_lymph 0.956914049634
+metastases metastases 0.999954224739
+metastases metastases 0.800251684154
+
+35
+

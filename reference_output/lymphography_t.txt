@@ -1,0 +1,65 @@
+lymphatics class
+block_of_affere by_pass class
+bl_of_lymph_c by_pass class
+bl_of_lymph_s no_of_nodes_in class
+by_pass no_of_nodes_in class
+extravasates by_pass class
+regeneration_of no_of_nodes_in class
+early_uptake_in lym_nodes_enlar class
+lym_nodes_dimin no_of_nodes_in class
+lym_nodes_enlar no_of_nodes_in class
+changes_in_lym changes_in_stru class
+defect_in_node no_of_nodes_in class
+changes_in_node no_of_nodes_in class
+changes_in_stru lymphatics class
+special_forms lym_nodes_enlar class
+dislocation_of no_of_nodes_in class
+exclusion_of_no no_of_nodes_in class
+no_of_nodes_in changes_in_stru class
+
+metastases malign_lymph 0.528062603345
+metastases metastases 0.999702275569
+malign_lymph malign_lymph 0.995098406408
+metastases malign_lymph 0.886118631780
+malign_lymph malign_lymph 0.814249947818
+malign_lymph malign_lymph 0.942474311931
+malign_lymph malign_lymph 0.977356648360
+metastases malign_lymph 0.977620817044
+metastases metastases 0.995180467730
+metastases metastases 0.999649754365
+malign_lymph malign_lymph 0.994091644883
+malign_lymph malign_lymph 0.509656996171
+malign_lymph malign_lymph 0.898449219352
+metastases malign_lymph 0.984953319875
+metastases metastases 0.621781003234
+metastases metastases 0.961117946886
+metastases metastases 0.997634694289
+metastases malign_lymph 0.667971868937
+metastases metastases 0.998865486695
+metastases metastases 0.998974657511
+metastases metastases 0.998722604943
+metastases metastases 0.916881829421
+malign_lymph metastases 0.818952222015
+metastases metastases 0.915706240886
+metastases metastases 0.881611964248
+malign_lymph malign_lymph 0.780721643487
+metastases metastases 0.987033788803
+malign_lymph metastases 0.742022609479
+malign_lymph malign_lymph 0.572045265000
+malign_lymph malign_lymph 0.984368072563
+malign_lymph metastases 0.697624225003
+malign_lymph malign_lymph 0.873864721610
+malign_lymph metastases 0.850416479466
+metastases metastases 0.998003910669
+malign_lymph malign_lymph 0.518946708537
+metastases malign_lymph 0.761730535017
+metastases metastases 0.901979031330
+metastases metastases 0.973881419519
+metastases metastases 0.806032613451
+malign_lymph metastases 0.547246597037
+metastases malign_lymph 0.967426770977
+metastases metastases 0.988880186881
+metastases metastases 0.963437522449
+
+31
+

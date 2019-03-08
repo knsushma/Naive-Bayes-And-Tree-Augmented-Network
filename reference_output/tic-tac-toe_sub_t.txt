@@ -1,0 +1,60 @@
+top-left-square class
+top-middle-square top-left-square class
+top-right-square top-middle-square class
+middle-left-square top-right-square class
+middle-middle-square top-left-square class
+middle-right-square bottom-left-square class
+bottom-left-square top-middle-square class
+bottom-middle-square top-right-square class
+bottom-right-square top-middle-square class
+
+positive positive 0.992112680932
+positive positive 0.997780322619
+positive negative 0.818857524343
+positive positive 0.997944593712
+positive positive 0.993813253166
+negative negative 0.944674740742
+negative negative 0.991562525400
+negative positive 0.804226854265
+positive positive 0.991649633311
+negative negative 0.956989388537
+positive positive 0.995294176911
+negative negative 0.974614972779
+negative negative 0.917352053766
+positive positive 0.989423681299
+positive positive 0.998658143926
+positive positive 0.999381119962
+negative positive 0.849293510423
+negative negative 0.827478970906
+positive positive 0.739750931121
+positive negative 0.590503740545
+positive positive 0.995962357281
+positive positive 0.996867285130
+positive positive 0.995698755093
+positive positive 0.998544105517
+positive positive 0.984177657214
+positive negative 0.670350024827
+positive positive 0.989013069330
+positive positive 0.999386584221
+positive positive 0.999645616372
+positive positive 0.991949684605
+negative negative 0.998990123827
+negative negative 0.892380008658
+positive positive 0.998733830333
+negative negative 0.939046500043
+negative negative 0.999725459486
+negative negative 0.883863267835
+negative negative 0.975583152594
+positive positive 0.994686706368
+positive positive 0.994014795070
+negative negative 0.946324680976
+negative negative 0.606391444140
+positive positive 0.991432072848
+negative negative 0.878342907474
+negative negative 0.595001972186
+positive positive 0.959286758082
+positive positive 0.944842610755
+positive positive 0.988294279302
+
+42
+
