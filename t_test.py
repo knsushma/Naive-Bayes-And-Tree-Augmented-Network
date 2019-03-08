@@ -237,29 +237,26 @@ if __name__ == '__main__':
     limits = np.linspace(0, dataset.shape[0] + 1, N_folds + 1, dtype=int)
     accuracy_diff_list_nb_tan = []
 
-    for i in range(len(limits) - 1):
+    for i in range(len(limits)-1):
         trainBayesNetwork = Bayes(trainingFileName)
         testBayesNetwork = Bayes(trainingFileName)
         # Split the data at the correct indices
         testBayesNetwork.dataSet = dataset[limits[i]: limits[i + 1]]
         testBayesNetwork.shape = testBayesNetwork.dataSet.shape
-        print(limits[i])
         if (i==0):
             trainBayesNetwork.dataSet = dataset[limits[i+1]: ]
             trainBayesNetwork.shape = trainBayesNetwork.dataSet.shape
-            print()
         elif (i==N_folds-1):
-            trainBayesNetwork.dataSet = dataset[0:limits[i - 1]]
+            trainBayesNetwork.dataSet = dataset[0:limits[i]]
             trainBayesNetwork.shape = trainBayesNetwork.dataSet.shape
-            print()
         else:
             trainBayesNetwork.dataSet = np.array(dataset[0:limits[i] - 1].tolist() + dataset[limits[i+1]: ].tolist())
             trainBayesNetwork.shape = trainBayesNetwork.dataSet.shape
-            print()
 
         trainBayesNetwork.computeNBConditionalProbabilityTable()
         trainBayesNetwork.printNBProbabilityOnTestDataSet(testBayesNetwork.dataSet)
         nb_corrects = trainBayesNetwork.num_of_correct_predictions
+        trainBayesNetwork.num_of_correct_predictions = 0
         #print(trainBayesNetwork.num_of_correct_predictions/trainBayesNetwork.dataSet.shape[0])
 
         adj_matrix = trainBayesNetwork.computeWeights()
@@ -272,23 +269,20 @@ if __name__ == '__main__':
         dependency_graph = {}
         featureDataSet = trainBayesNetwork.features.tolist()
         features = np.array(trainBayesNetwork.features)[:,0].tolist()
-        #print(featureDataSet[0][0] + " " + "class")
         dependency_graph[0] = len(featureDataSet)
         for attr in features:
             for edge in edge_matrix:
                 if (features.index(attr) == edge[1]):
-                    #print(str(featureDataSet[edge[1]][0]) + " " + str(featureDataSet[edge[0]][0]) + " class")
                     dependency_graph[features.index(features[edge[1]])] = features.index(features[edge[0]])
-        #print()
         trainBayesNetwork.created_tan_feature_class(dependency_graph)
         trainBayesNetwork.compute_tan_cpt(dependency_graph)
         trainBayesNetwork.tan_predict(testBayesNetwork.dataSet)
         tan_corrects = trainBayesNetwork.num_of_correct_predictions
-        #print(trainBayesNetwork.num_of_correct_predictions/trainBayesNetwork.dataSet.shape[0])
-        nb_accuracy = nb_corrects/trainBayesNetwork.dataSet.shape[0]
-        tan_accuracy =  tan_corrects/trainBayesNetwork.dataSet.shape[0]
-        print(trainBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/trainBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/trainBayesNetwork.dataSet.shape[0])
-        accuracy_diff_list_nb_tan.append(tan_accuracy-nb_accuracy)
+
+        nb_accuracy = nb_corrects/testBayesNetwork.dataSet.shape[0]
+        tan_accuracy =  tan_corrects/testBayesNetwork.dataSet.shape[0]
+        print(trainBayesNetwork.dataSet.shape[0], testBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/testBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/testBayesNetwork.dataSet.shape[0])
+        accuracy_diff_list_nb_tan.append(nb_accuracy-tan_accuracy)
 
     mean = np.mean(np.array(accuracy_diff_list_nb_tan))
     sd = np.std(np.array(accuracy_diff_list_nb_tan))

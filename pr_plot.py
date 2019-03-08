@@ -217,7 +217,6 @@ class Bayes:
         for index, label in enumerate(testLabels):
             testLabels[index,] = labelMap.get(label)
         testLabels = testLabels.astype(int)
-        posNegCountNew = Counter(testLabels)
 
         if choice == 'nb':
             rocMatrix = np.column_stack((np.array(testLabels), np.array(self.nb_confidence)))
@@ -226,7 +225,6 @@ class Bayes:
         rocMatrixSorted = rocMatrix[np.argsort([-rocMatrix[:, 1]])][0]
         posNegCount = Counter(rocMatrixSorted[:, 0].astype(int))
         posCount = posNegCount.get(1)
-        negCount = posNegCount.get(0)
 
         recall_list = []
         precision_list = []
@@ -285,43 +283,35 @@ class Bayes:
         plt.show()
 
 if __name__ == '__main__':
-    # trainingFileName = "./Resources/lymphography_train.json"
-    # testFileName = "./Resources/lymphography_test.json"
-    choice = "n"
     trainingFileName = "./Resources/tic-tac-toe_train.json"
     testFileName = "./Resources/tic-tac-toe_test.json"
-    # trainingFileName = "./Resources/tic-tac-toe_sub_train.json"
-    # testFileName = "./Resources/tic-tac-toe_sub_test.json"
 
     trainBayesNetwork = Bayes(trainingFileName)
     testBayesNetwork = Bayes(testFileName)
 
     trainBayesNetwork.computeNBConditionalProbabilityTable()
-    if choice == "n":
-        trainBayesNetwork.printNBProbabilityOnTestDataSet(testBayesNetwork.dataSet)
-    else:
-        weight_matrix = trainBayesNetwork.computeWeights()
-        vertices_list = []
-        for i in range(len(trainBayesNetwork.features)):
-            vertices_list.append(i)
-        edge_matrix = trainBayesNetwork.findMaximumWeightedEdgeUsingPrims(weight_matrix, vertices_list)
+    trainBayesNetwork.printNBProbabilityOnTestDataSet(testBayesNetwork.dataSet)
+    nb_recall, nb_precision = trainBayesNetwork.precision_recall_graph(testBayesNetwork.dataSet,"nb")
 
-        # Output Starting part of TAN
-        dependency_graph = {}
-        featureDataSet = trainBayesNetwork.features.tolist()
-        features = np.array(trainBayesNetwork.features)[:,0].tolist()
-        print(featureDataSet[0][0] + " " + "class")
-        dependency_graph[0] = len(featureDataSet)
-        for attr in features:
-            for edge in edge_matrix:
-                if (features.index(attr) == edge[1]):
-                    print(str(featureDataSet[edge[1]][0]) + " " + str(featureDataSet[edge[0]][0]) + " class")
-                    dependency_graph[features.index(features[edge[1]])] = features.index(features[edge[0]])
-        print()
-        trainBayesNetwork.created_tan_feature_class(dependency_graph)
-        trainBayesNetwork.compute_tan_cpt()
-        trainBayesNetwork.tan_predict(testBayesNetwork.dataSet)
+    adj_matrix = trainBayesNetwork.computeWeights()
+    vertices_list = []
+    for i in range(len(trainBayesNetwork.features)):
+        vertices_list.append(i)
+    edge_matrix = trainBayesNetwork.findMaximumWeightedEdgeUsingPrims(adj_matrix, vertices_list)
+    dependency_graph = {}
+    featureDataSet = trainBayesNetwork.features.tolist()
+    features = np.array(trainBayesNetwork.features)[:,0].tolist()
+    print(featureDataSet[0][0] + " " + "class")
+    dependency_graph[0] = len(featureDataSet)
+    for attr in features:
+        for edge in edge_matrix:
+            if (features.index(attr) == edge[1]):
+                print(str(featureDataSet[edge[1]][0]) + " " + str(featureDataSet[edge[0]][0]) + " class")
+                dependency_graph[features.index(features[edge[1]])] = features.index(features[edge[0]])
+    print()
+    trainBayesNetwork.created_tan_feature_class(dependency_graph)
+    trainBayesNetwork.compute_tan_cpt()
+    trainBayesNetwork.tan_predict(testBayesNetwork.dataSet)
+    tan_recall,tan_precision = trainBayesNetwork.precision_recall_graph(testBayesNetwork.dataSet, "tan")
 
-
-
-
+    trainBayesNetwork.plot_pr_curve(nb_recall, nb_precision, tan_recall, tan_precision)
