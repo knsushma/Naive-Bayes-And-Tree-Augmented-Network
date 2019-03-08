@@ -4,6 +4,7 @@ import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
 import math
+import sys
 
 
 class featureClass:
@@ -285,11 +286,20 @@ class Bayes:
         plt.show()
 
 if __name__ == '__main__':
+
+    if (len(sys.argv)<3):
+        print("Please pass 3 arguments. 1) Training File Path, 2) Testing File path, 3) Choice (n: Naive Bayes, t: TAN) ")
+        sys.exit(1)
+
+    trainingFileName = sys.argv[1]
+    testFileName = sys.argv[2]
+    choice = sys.argv[3]
+
     # trainingFileName = "./Resources/lymphography_train.json"
     # testFileName = "./Resources/lymphography_test.json"
-    choice = "n"
-    trainingFileName = "./Resources/tic-tac-toe_train.json"
-    testFileName = "./Resources/tic-tac-toe_test.json"
+    # choice = "n"
+    # trainingFileName = "./Resources/tic-tac-toe_train.json"
+    # testFileName = "./Resources/tic-tac-toe_test.json"
     # trainingFileName = "./Resources/tic-tac-toe_sub_train.json"
     # testFileName = "./Resources/tic-tac-toe_sub_test.json"
 

@@ -1,9 +1,9 @@
 import json
 import numpy as np
 import pandas as pd
-from collections import Counter
 import math
 from scipy import stats
+import sys
 
 
 class featureClass:
@@ -227,7 +227,13 @@ class Bayes:
         return (specificAttrCount + 1.0) / (totalAttrCount + noOfAttr)
 
 if __name__ == '__main__':
-    trainingFileName = "./Resources/tic-tac-toe.json"
+
+    if (len(sys.argv) < 1):
+        print("Please pass 1 argument. 1) Training File Path ")
+        sys.exit(1)
+
+    trainingFileName = sys.argv[1]
+    # trainingFileName = "./Resources/tic-tac-toe.json"
 
     fileContent = json.load(open(trainingFileName))
     dataset = np.array(fileContent['data'])
@@ -281,7 +287,7 @@ if __name__ == '__main__':
 
         nb_accuracy = nb_corrects/testBayesNetwork.dataSet.shape[0]
         tan_accuracy =  tan_corrects/testBayesNetwork.dataSet.shape[0]
-        print(trainBayesNetwork.dataSet.shape[0], testBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/testBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/testBayesNetwork.dataSet.shape[0])
+        #print(trainBayesNetwork.dataSet.shape[0], testBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/testBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/testBayesNetwork.dataSet.shape[0])
         accuracy_diff_list_nb_tan.append(nb_accuracy-tan_accuracy)
 
     mean = np.mean(np.array(accuracy_diff_list_nb_tan))
@@ -289,6 +295,6 @@ if __name__ == '__main__':
     se = sd/math.sqrt(len(accuracy_diff_list_nb_tan))
     t_value = mean/se
     p_value = stats.t.sf(np.abs(t_value), len(accuracy_diff_list_nb_tan) - 1) * 2
-    print(mean, sd, se, t_value, p_value)
+    print("Mean:", mean, " SD:", sd, " t-value:", t_value, " p-value:", p_value)
 
 

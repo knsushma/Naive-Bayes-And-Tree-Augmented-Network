@@ -4,6 +4,7 @@ import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
 import math
+import sys
 
 
 class featureClass:
@@ -283,8 +284,15 @@ class Bayes:
         plt.show()
 
 if __name__ == '__main__':
-    trainingFileName = "./Resources/tic-tac-toe_train.json"
-    testFileName = "./Resources/tic-tac-toe_test.json"
+
+    if (len(sys.argv)<2):
+        print("Please pass 2 arguments. 1) Training File Path, 2) Testing File path ")
+        sys.exit(1)
+
+    trainingFileName = sys.argv[1]
+    testFileName = sys.argv[2]
+    # trainingFileName = "./Resources/tic-tac-toe_train.json"
+    # testFileName = "./Resources/tic-tac-toe_test.json"
 
     trainBayesNetwork = Bayes(trainingFileName)
     testBayesNetwork = Bayes(testFileName)

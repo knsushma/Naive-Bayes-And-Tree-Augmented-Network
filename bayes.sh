@@ -1,0 +1,1 @@
+python naive_bayes_and_tan.py $1 $2 $3
