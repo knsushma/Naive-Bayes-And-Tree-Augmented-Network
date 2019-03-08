@@ -6,6 +6,11 @@ This assignment includes:
  Evaluating methods through Precision/Recall curves, and understand their differences with ROC curves.\
  Comparing models using a paired t test to see whether one model is significantly better than the other.
 
+
+Use below commands to run the required step. 
+choice n: Naive Bayes execution
+choice t: TAN execution
+
 Naive Bayes 
 ```
 ./bayes ../Resources/lymphography_train.json ../Resources/lymphography_test.json n
@@ -29,3 +34,5 @@ Two paired t-test to compare two models (Naive-Bayes and TAN)
 ```
 python t_test.py ../Resources/tic-tac-toe.json 
 ```
+
+For more details, look at hw2.pdf
