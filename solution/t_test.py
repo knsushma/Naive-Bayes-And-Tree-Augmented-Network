@@ -4,7 +4,7 @@ import pandas as pd
 import math
 from scipy import stats
 import sys
-
+#from solution.naive_bayes_and_tan import *
 
 class featureClass:
     def __init__(self, index, name, values, parentIndex):
@@ -281,13 +281,13 @@ if __name__ == '__main__':
                 if (features.index(attr) == edge[1]):
                     dependency_graph[features.index(features[edge[1]])] = features.index(features[edge[0]])
         trainBayesNetwork.created_tan_feature_class(dependency_graph)
-        trainBayesNetwork.compute_tan_cpt(dependency_graph)
+        trainBayesNetwork.compute_tan_cpt()
         trainBayesNetwork.tan_predict(testBayesNetwork.dataSet)
         tan_corrects = trainBayesNetwork.num_of_correct_predictions
 
         nb_accuracy = nb_corrects/testBayesNetwork.dataSet.shape[0]
         tan_accuracy =  tan_corrects/testBayesNetwork.dataSet.shape[0]
-        #print(trainBayesNetwork.dataSet.shape[0], testBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/testBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/testBayesNetwork.dataSet.shape[0])
+        print(trainBayesNetwork.dataSet.shape[0], testBayesNetwork.dataSet.shape[0], nb_corrects, nb_corrects/testBayesNetwork.dataSet.shape[0], tan_corrects, tan_corrects/testBayesNetwork.dataSet.shape[0])
         accuracy_diff_list_nb_tan.append(nb_accuracy-tan_accuracy)
 
     mean = np.mean(np.array(accuracy_diff_list_nb_tan))
