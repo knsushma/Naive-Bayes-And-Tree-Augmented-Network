@@ -1,4 +1,4 @@
-# Naive-Bayes-And-Tree-Augmented-Network
+## Naive-Bayes-And-Tree-Augmented-Network
 
 This assignment includes:
 
@@ -6,6 +6,11 @@ This assignment includes:
  Evaluating methods through Precision/Recall curves, and understand their differences with ROC curves.\
  Comparing models using a paired t test to see whether one model is significantly better than the other.
 
+
+### Environment Setup:
+```
+Follow steps mentioned in python-setup-on-remote/python-setup.pdf
+```
 
 Use below commands to run the required step. 
 choice n: Naive Bayes execution
@@ -35,4 +40,4 @@ Two paired t-test to compare two models (Naive-Bayes and TAN)
 python t_test.py ../Resources/tic-tac-toe.json 
 ```
 
-For more details, look at hw2.pdf
+For more details about implementation, look at hw2.pdf
